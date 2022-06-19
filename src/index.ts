@@ -3,4 +3,4 @@ import 'dotenv/config';
 
 const PORT = process.env.PORT_SERVER;
 
-server(PORT!);
+server().listen(PORT, () => console.log(`Server running on port ${PORT}`));

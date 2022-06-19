@@ -108,7 +108,7 @@ export const deleteUser = async (res: http.ServerResponse, id: string) => {
       res.writeHead(404, { 'Content-type': 'application/json' });
       res.end(JSON.stringify({ message: 'Sorry, user not found... ' }));
     } else {
-      res.writeHead(200, { 'Content-type': 'application/json' });
+      res.writeHead(204, { 'Content-type': 'application/json' });
       res.end(JSON.stringify(deletedUser));
     }
   } catch (error) {
