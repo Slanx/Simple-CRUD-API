@@ -87,8 +87,13 @@ export const updateUser = async (
       if (isUser) {
         const updatedUser = await update(id, updatedDataUser);
 
-        res.writeHead(200, { 'Content-type': 'application/json' });
-        res.end(JSON.stringify(updatedUser));
+        if (updatedUser) {
+          res.writeHead(200, { 'Content-type': 'application/json' });
+          res.end(JSON.stringify(updatedUser));
+        } else {
+          res.writeHead(400, { 'Content-type': 'application/json' });
+          res.end(JSON.stringify({ message: 'Sorry, user not found...' }));
+        }
       } else {
         res.writeHead(400, { 'Content-type': 'application/json' });
         res.end(JSON.stringify({ message: 'Request body does not contain required fields' }));
