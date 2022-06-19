@@ -15,8 +15,6 @@ age — user's age (number, required)
 hobbies — user's hobbies (array of strings or empty array, required)
 }
 
-======
-
 ## Method
 
 - **GET** `/api/person`
