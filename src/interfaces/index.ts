@@ -19,7 +19,7 @@ interface IKeySettings {
 }
 
 interface IBodySettings {
-  [index: string]: IKeySettings;
+  [keys: string]: IKeySettings;
 }
 
 interface IRoute {

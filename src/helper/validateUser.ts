@@ -5,46 +5,39 @@ export const validateJSON = async (body: any, bodySettings: IBodySettings) => {
     if (!(typeof body === 'object')) {
       throw new Error('Invalid type');
     }
-    if (!(Object.keys(body).length <= Object.keys(bodySettings).length)) {
-      throw new Error('Invalid type');
+
+    for (const field in body) {
+      if (!bodySettings.hasOwnProperty(field)) {
+        throw new Error('Invalid type');
+      }
     }
 
-    const valideFields = Object.entries(bodySettings);
+    for (const key in bodySettings) {
+      const setting = bodySettings[key];
+      const valueBody = body[key];
 
-    valideFields.forEach((item) => {
-      if (item[1].required) {
-        if (!Object.keys(body).includes(item[0])) throw new Error('Invalid type');
-      }
-      if (item[1].number) {
-        if (typeof body[item[0]] !== 'number') throw new Error('Invalid type');
-      } else if (item[1].string) {
-        if (!(typeof body[item[0]] !== 'string')) throw new Error('Invalid type');
-      } else if (item[1].array) {
-        if (Array.isArray(body[item[0]])) {
-          if (body[item[0]].length !== 0) {
-            body[item[0]].forEach((elem: string) => {
-              if (typeof elem !== item[1].array) throw new Error('Invalid type');
+      if (setting.required && valueBody.hasOwnProperty(key)) {
+        throw new Error('Invalid type');
+      } else if (!valueBody) {
+        continue;
+      } else if (setting.number && typeof valueBody !== 'number') {
+        throw new Error('Invalid type');
+      } else if (setting.string && typeof valueBody !== 'string') {
+        throw new Error('Invalid type');
+      } else if (setting.array) {
+        if (Array.isArray(valueBody)) {
+          if (valueBody.length !== 0) {
+            valueBody.forEach((elem: string) => {
+              if (typeof elem !== setting.array) throw new Error('Invalid type');
             });
           }
         } else {
           throw new Error('Invalid type');
         }
       }
-    });
+    }
     return true;
-  } catch (e) {
+  } catch (e: any) {
     return false;
   }
 };
-
-(async () =>
-  console.log(
-    await validateJSON(
-      { username: 'john', age: 25, hobbies: ['string'] },
-      {
-        username: { required: false, string: true },
-        age: { required: false, number: true },
-        hobbies: { required: false, array: 'string' },
-      }
-    )
-  ))();

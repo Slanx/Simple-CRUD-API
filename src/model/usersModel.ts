@@ -1,15 +1,18 @@
 import { validate as uuidValidate, v4 as uuid } from 'uuid';
-import { IUser, IChangedUserData } from '../interfaces';
+import { IChangedUserData, IUser } from '../interfaces';
+import { users, setUsers } from '../dataBase/users';
 
-let users: IUser[] = [];
-
-export function findAll(): unknown {
+export function findAll() {
   return new Promise((resolve, reject) => {
-    resolve(users);
+    try {
+      resolve(users);
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 
-export function find(id: string): unknown {
+export function find(id: string) {
   return new Promise((resolve, reject) => {
     try {
       if (!uuidValidate(id)) {
@@ -23,43 +26,57 @@ export function find(id: string): unknown {
   });
 }
 
-export function create(user: IUser): unknown {
+export function create(user: IUser) {
   return new Promise((resolve, reject) => {
-    const newProduct = { id: uuid(), ...user };
-    users.push(newProduct);
-    resolve(undefined);
+    try {
+      const newProduct = { id: uuid(), ...user };
+      const newUsers = users;
+      newUsers.push(newProduct);
+      setUsers(newUsers);
+      resolve(newProduct);
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 
-export function update(id: string, changedUserData: IChangedUserData): unknown {
+export function update(id: string, changedUserData: IChangedUserData) {
   return new Promise((resolve, reject) => {
     try {
       if (!uuidValidate(id)) {
         throw new Error("ID isn't a uuid type");
       }
-
-      users = users.map((user) => {
+      let updateUser;
+      const newUsers = users.map((user) => {
         if (user.id === id) {
-          return { ...user, ...changedUserData };
+          updateUser = { ...user, ...changedUserData };
+          return updateUser;
         }
         return user;
       });
-
-      resolve(undefined);
+      setUsers(newUsers);
+      resolve(updateUser);
     } catch (error) {
       reject(error);
     }
   });
 }
 
-export function remove(id: string): unknown {
+export function remove(id: string) {
   return new Promise((resolve, reject) => {
     try {
       if (!uuidValidate(id)) {
         throw new Error("ID isn't a uuid type");
       }
-      users = users.filter((user) => user.id !== id);
-      resolve(undefined);
+      let removedUser;
+      const newUsers = users.filter((user) => {
+        if (user.id == id) {
+          removedUser = user;
+        }
+        return user.id !== id;
+      });
+      setUsers(newUsers);
+      resolve(removedUser);
     } catch (error) {
       reject(error);
     }
