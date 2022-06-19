@@ -95,7 +95,7 @@ export const updateUser = async (
       }
     });
   } catch (error) {
-    res.writeHead(400, { 'Content-type': 'application/json' });
+    res.writeHead(404, { 'Content-type': 'application/json' });
     res.end(JSON.stringify({ message: 'Sorry, Id is not uuid type' }));
   }
 };

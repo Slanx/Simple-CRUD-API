@@ -11,10 +11,14 @@ const user: IUser = {
   hobbies: [],
 };
 
-const putUser: IChangedUserData = {
+const putFullUser: IChangedUserData = {
   username: 'John',
   age: 15,
   hobbies: ['football'],
+};
+
+const putUser: IChangedUserData = {
+  username: 'John',
 };
 
 let id: string;
@@ -43,7 +47,7 @@ describe('Сценарий 1', () => {
     expect(result.body.hobbies).toStrictEqual([]);
   });
   it('Update the created record with a PUT request', async () => {
-    const result = await request(httpServer).put(`/api/users/${id}`).send(putUser);
+    const result = await request(httpServer).put(`/api/users/${id}`).send(putFullUser);
     expect(result.status).toBe(200);
     expect(result.body.username).toBe('John');
     expect(result.body.age).toBe(15);
@@ -82,12 +86,12 @@ describe('Сценарий 2', () => {
     expect(result.body.age).toBe(20);
     expect(result.body.hobbies).toStrictEqual([]);
   });
-  it('Update the created record with a PUT request', async () => {
+  it('Update the created entry with a PUT request, but not completely', async () => {
     const result = await request(httpServer).put(`/api/users/${id}`).send(putUser);
     expect(result.status).toBe(200);
     expect(result.body.username).toBe('John');
-    expect(result.body.age).toBe(15);
-    expect(result.body.hobbies).toStrictEqual(['football']);
+    expect(result.body.age).toBe(20);
+    expect(result.body.hobbies).toStrictEqual([]);
   });
   it('Delete the created object by id', async () => {
     const result = await request(httpServer).delete(`/api/users/${id}`);
@@ -96,6 +100,25 @@ describe('Сценарий 2', () => {
   it('Trying to get a deleted object by id', async () => {
     const result = await request(httpServer).get(`/api/users/${id}`);
     expect(result.status).toBe(404);
+  });
+
+  afterAll(() => httpServer.close());
+});
+
+describe('Сценарий 3', () => {
+  it('Get all records with a GET api/users request', async () => {
+    const result = await request(httpServer).get('/api/users');
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveLength(0);
+  });
+  it('A new object is created by a POST api/users request', async () => {
+    const result = await request(httpServer).post('/api/users').send({});
+    expect(result.status).toBe(400);
+  });
+  it('With a GET request, сheck if the user does not exist', async () => {
+    const result = await request(httpServer).get(`/api/users/`);
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveLength(0);
   });
 
   afterAll(() => httpServer.close());
